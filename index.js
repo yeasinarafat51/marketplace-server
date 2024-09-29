@@ -29,6 +29,15 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
+    const jobCollection = client.db('soloSphere').collection('jobs')
+    const bidsCollection = client.db('soloSphere').collection('bids')
+
+    // get all jobs data
+    app.get('/jobs', async (req , res) =>{
+        const result = await jobCollection.find().toArray()
+        console.log(result)
+        res.send(result)
+    })
   
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
