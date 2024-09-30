@@ -39,6 +39,15 @@ async function run() {
         res.send(result)
     })
 
+    // get all myjob
+    app.get('/jobs/:email', async (req, res) => {
+        const email = req.params.email
+        const query = { 'buyer.email': email }
+        const result = await jobCollection.find(query).toArray()
+        console.log(result)
+        res.send(result)
+      })
+
     // get single job data
     app.get ('/job/:id', async (req, res) =>{
         const id = req.params.id
