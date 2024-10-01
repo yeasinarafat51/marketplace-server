@@ -101,22 +101,20 @@ async function run() {
         res.send(result)
     })
       // get all bid -request job ownner
-   
-    app.get('/bir/:email', async (req, res) => {
+    //   app.get('/bid-requests/:email',  async (req, res) => {
+    //     const email = req.params.email
+    //     const query = { 'buyer.email': email }
+    //     const result = await bidsCollection.find(query).toArray()
+    //     console.log(result)
+    //     res.send(result)
+    //   })
+    app.get('/bid-requests/:email', async (req, res) => {
         const email = req.params.email; // যেই ইমেইলটি তুমি URL থেকে পাচ্ছো
         const query = { 'buyer.email': email }; // buyer অবজেক্টের email
         const result = await bidsCollection.find(query).toArray();
-        // console.log(result);
+        console.log(result);
         res.send(result);
     });
-    app.get('/jobss/:email', async (req, res) => {
-        const email = req.params.email
-        const query = { 'buyer.email': email }
-        const result = await bidsCollection.find(query).toArray()
-        console.log(result)
-        
-        res.send(result)
-      })
     
   
     // Send a ping to confirm a successful connection
