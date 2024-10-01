@@ -47,6 +47,14 @@ async function run() {
         console.log(result)
         res.send(result)
       })
+    // get all mybids
+    app.get('/my-bids/:email', async (req, res) => {
+        const email = req.params.email
+        const query = { 'email': email }
+        const result = await bidsCollection.find(query).toArray()
+        console.log(result)
+        res.send(result)
+      })
 
     // get single job data
     app.get ('/job/:id', async (req, res) =>{
