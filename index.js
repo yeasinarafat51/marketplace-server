@@ -1,5 +1,7 @@
 const express = require('express')
 const cors = require('cors')
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 require('dotenv').config()
@@ -31,6 +33,17 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     const jobCollection = client.db('soloSphere').collection('jobs')
     const bidsCollection = client.db('soloSphere').collection('bids')
+
+    // jwt token
+    app.post ('/jwt',  async (req, res) =>{
+      const user = req.body;
+      // console.log(user)
+      const token =  jwt.sign(user, process.env.ACCESS_TOKEN_SECRET,{
+        expiresIn: '365d'
+      })
+      res.send({token})
+    })
+
 
     // get all jobs data
     app.get('/jobs', async (req , res) =>{
@@ -64,6 +77,16 @@ async function run() {
         const result = await jobCollection.findOne(query)
         res.send(result)
     })
+    // bid - requests
+
+    app.get('/bid-requests/:email', async (req, res) => {
+        const email = req.params.email
+        const query = { 'buyer.email': email }
+        const result = await bidsCollection.find(query).toArray()
+        console.log(result)
+        
+        res.send(result)
+      })
 
     // save bid data
     app.post ('/bid', async (req, res) =>{
@@ -100,23 +123,20 @@ async function run() {
         console.log(result)
         res.send(result)
     })
-      // get all bid -request job ownner
-   
-    app.get('/bir/:email', async (req, res) => {
-        const email = req.params.email; // যেই ইমেইলটি তুমি URL থেকে পাচ্ছো
-        const query = { 'buyer.email': email }; // buyer অবজেক্টের email
-        const result = await bidsCollection.find(query).toArray();
-        // console.log(result);
-        res.send(result);
-    });
-    app.get('/jobss/:email', async (req, res) => {
-        const email = req.params.email
-        const query = { 'buyer.email': email }
-        const result = await bidsCollection.find(query).toArray()
-        console.log(result)
-        
+      // update bid -status
+      app.patch('/bid/:id', async (req, res) =>{
+        const id = req.params.id
+        const status = req.body
+        const query = {_id: new ObjectId(id)}
+        const updateDoc = {
+            $set: status,
+        }
+        const result = await bidsCollection.updateOne(query, updateDoc)
         res.send(result)
       })
+   
+   
+   
     
   
     // Send a ping to confirm a successful connection
