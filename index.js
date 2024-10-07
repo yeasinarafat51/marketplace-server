@@ -19,6 +19,7 @@ const corsOptions = {
 }
 app.use(cors(corsOptions))
 app.use(express.json())
+app.use(cookieParser())
 const uri = "mongodb+srv://solosphere:gZ66r3UMeEy5vQr@cluster0.v58lgaw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 // / Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -73,8 +74,12 @@ async function run() {
         res.send(result)
     })
 
-    // get all myjob
+    // get all myjob posted
     app.get('/jobs/:email', async (req, res) => {
+      const token = req.cookies?.token
+      if(token){
+        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) =>{})
+      }
         const email = req.params.email
         const query = { 'buyer.email': email }
         const result = await jobCollection.find(query).toArray()
