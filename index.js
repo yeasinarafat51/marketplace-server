@@ -8,6 +8,25 @@ require('dotenv').config()
 const port = process.env.PORT || 9000
 const app = express()
 
+// verify jwt midlewire
+
+const verifyToken = (req, res, next) =>{
+  const token = req.cookies?.token
+  if(!token) return res.status(401).send({message: 'unauthorized access'})
+  if(token){
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) =>{
+      if(err) {
+        return res.status(401).send({message: 'unauthorized access'})
+      }
+      console.log(decoded)
+      req.user = decoded
+      next()
+    })
+  }
+
+ 
+}
+
 const corsOptions = {
   origin: [
     'http://localhost:5173',
@@ -75,19 +94,28 @@ async function run() {
     })
 
     // get all myjob posted
-    app.get('/jobs/:email', async (req, res) => {
-      const token = req.cookies?.token
-      if(token){
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) =>{})
-      }
+    app.get('/jobs/:email',verifyToken, async (req, res) => {
+      const tokenEmail = req.user.email
+      // const token = req.cookies?.token
+      // if(token){
+      //   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) =>{
+      //     if(err) {
+      //       return console.log(err)
+      //     }
+      //     console.log(decoded)
+      //   })
+      // }
         const email = req.params.email
+        if(tokenEmail !== email){
+          return res.status(403).send({message: 'Forbiden access'})
+        }
         const query = { 'buyer.email': email }
         const result = await jobCollection.find(query).toArray()
         
         res.send(result)
       })
     // get all mybids
-    app.get('/my-bids/:email', async (req, res) => {
+    app.get('/my-bids/:email',verifyToken, async (req, res) => {
         const email = req.params.email
         const query = { email: email }
         const result = await bidsCollection.find(query).toArray()
@@ -105,7 +133,7 @@ async function run() {
     })
     // bid - requests
 
-    app.get('/bid-requests/:email', async (req, res) => {
+    app.get('/bid-requests/:email', verifyToken, async (req, res) => {
         const email = req.params.email
         const query = { 'buyer.email': email }
         const result = await bidsCollection.find(query).toArray()
@@ -115,13 +143,13 @@ async function run() {
       })
 
     // save bid data
-    app.post ('/bid', async (req, res) =>{
+    app.post ('/bid',  verifyToken ,async (req, res) =>{
         const bidData = req.body
         const result = await bidsCollection.insertOne(bidData)
         res.send(result)
     })
     // save job data
-    app.post ('/job', async (req, res) =>{
+    app.post ('/job', verifyToken, async (req, res) =>{
         const jobData = req.body
         const result = await jobCollection.insertOne(jobData)
         res.send(result)
