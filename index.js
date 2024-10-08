@@ -143,13 +143,28 @@ async function run() {
 
     // save bid data
     app.post ('/bid',  async (req, res) =>{
-        const bidData = req.body
+
+      // check if its a duplicate req
+      
+        const bidData = req.body;
+        const query = {
+          email:bidData.email,
+          jobId:bidData.jobId,
+  
+        }
+        const alreadyApplied = await bidsCollection.findOne(query)
+        if(alreadyApplied) {
+          return res
+          .status(400)
+          .send('already placed')
+        }
         const result = await bidsCollection.insertOne(bidData)
         res.send(result)
     })
     // save job data
     app.post ('/job', async (req, res) =>{
-        const jobData = req.body
+        const jobData = req.body;
+       
         const result = await jobCollection.insertOne(jobData)
         res.send(result)
     })
