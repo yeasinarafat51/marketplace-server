@@ -18,7 +18,7 @@ const verifyToken = (req, res, next) =>{
       if(err) {
         return res.status(401).send({message: 'unauthorized access'})
       }
-      console.log(decoded)
+      // console.log(decoded)
       req.user = decoded
       next()
     })
@@ -55,19 +55,18 @@ async function run() {
     const bidsCollection = client.db('soloSphere').collection('bids')
 
     // jwt token
-    app.post ('/jwt',  async (req, res) =>{
-      const user = req.body;
-      // console.log(user)
-      const token =  jwt.sign(user, process.env.ACCESS_TOKEN_SECRET,{
-        expiresIn: '365d'
+    app.post('/jwt', async (req, res) => {
+      const email = req.body
+      const token = jwt.sign(email, process.env.ACCESS_TOKEN_SECRET, {
+        expiresIn: '365d',
       })
-      res.cookie('token', token, {
-        httpOnly:true,
-        secure: process.env.NODE_ENV === 'production',
-
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
-      })
-      .send({success: true})
+      res
+        .cookie('token', token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        })
+        .send({ success: true })
     })
 
     // clear token on logout
@@ -115,7 +114,7 @@ async function run() {
         res.send(result)
       })
     // get all mybids
-    app.get('/my-bids/:email',verifyToken, async (req, res) => {
+    app.get('/my-bids/:email', async (req, res) => {
         const email = req.params.email
         const query = { email: email }
         const result = await bidsCollection.find(query).toArray()
@@ -133,23 +132,23 @@ async function run() {
     })
     // bid - requests
 
-    app.get('/bid-requests/:email', verifyToken, async (req, res) => {
+    app.get('/bid-requests/:email', async (req, res) => {
         const email = req.params.email
         const query = { 'buyer.email': email }
         const result = await bidsCollection.find(query).toArray()
-        console.log(result)
+        // console.log(result)
         
         res.send(result)
       })
 
     // save bid data
-    app.post ('/bid',  verifyToken ,async (req, res) =>{
+    app.post ('/bid',  async (req, res) =>{
         const bidData = req.body
         const result = await bidsCollection.insertOne(bidData)
         res.send(result)
     })
     // save job data
-    app.post ('/job', verifyToken, async (req, res) =>{
+    app.post ('/job', async (req, res) =>{
         const jobData = req.body
         const result = await jobCollection.insertOne(jobData)
         res.send(result)
