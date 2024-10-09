@@ -24,6 +24,8 @@ const app = express()
 // app.use(cors(corsOptions))
 
 app.use(cors());  // allows all origins
+app.options('*', cors());  // Allow preflight requests for all routes
+
 
 app.use(express.json())
 app.use(cookieParser())
