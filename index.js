@@ -7,9 +7,9 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT || 9000
 const app = express()
-app.use(cors({
-  origin: 'https://marketplace-f655e.web.app'
-}));
+// app.use(cors({
+//   origin: 'https://marketplace-f655e.web.app'
+// }));
 
 // const corsOptions = {
 //   origin: [
@@ -22,6 +22,9 @@ app.use(cors({
 //   optionSuccessStatus: 200,
 // }
 // app.use(cors(corsOptions))
+
+app.use(cors());  // allows all origins
+
 app.use(express.json())
 app.use(cookieParser())
 
