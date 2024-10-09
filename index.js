@@ -5,33 +5,25 @@ const cookieParser = require('cookie-parser')
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 require('dotenv').config()
-const port = process.env.PORT || 9000
+const port = process.env.PORT || 9000;
 const app = express()
-// Access-Control-Allow-Origin: https://marketplace-f655e.web.app
-app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-}); 
-app.use(cors({
-  origin: 'https://marketplace-f655e.web.app'
-}));
-
-// const corsOptions = {
-//   origin: [
-//     'http://localhost:5173',
-//     'http://localhost:5174',
-//     'https://marketplace-f655e.web.app',
-    
-//   ],
-//   credentials: true,
-//   optionSuccessStatus: 200,
-// }
-// app.use(cors(corsOptions))
 
 
-// app.use(cors());  // allows all origins
-// app.options('*', cors());  // Allow preflight requests for all routes
+
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://marketplace-f655e.web.app',
+    'https://marketplacebd.netlify.app'
+  ],
+  credentials: true,
+  optionSuccessStatus: 200,
+}
+app.use(cors(corsOptions))
+
+
+
 
 
 
