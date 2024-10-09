@@ -7,9 +7,15 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT || 9000
 const app = express()
-// app.use(cors({
-//   origin: 'https://marketplace-f655e.web.app'
-// }));
+// Access-Control-Allow-Origin: https://marketplace-f655e.web.app
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+}); 
+app.use(cors({
+  origin: 'https://marketplace-f655e.web.app'
+}));
 
 // const corsOptions = {
 //   origin: [
@@ -23,8 +29,10 @@ const app = express()
 // }
 // app.use(cors(corsOptions))
 
-app.use(cors());  // allows all origins
-app.options('*', cors());  // Allow preflight requests for all routes
+
+// app.use(cors());  // allows all origins
+// app.options('*', cors());  // Allow preflight requests for all routes
+
 
 
 app.use(express.json())
