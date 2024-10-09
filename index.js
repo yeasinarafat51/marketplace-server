@@ -7,8 +7,21 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 const port = process.env.PORT || 9000
 const app = express()
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://marketplace-f655e.web.app',
+    
+  ],
+  credentials: true,
+  optionSuccessStatus: 200,
+}
+app.use(cors(corsOptions))
+app.use(express.json())
+app.use(cookieParser())
 
-// verify jwt midlewire
+// verify jwt midlewiredfgh
 
 const verifyToken = (req, res, next) =>{
   const token = req.cookies?.token
@@ -27,19 +40,7 @@ const verifyToken = (req, res, next) =>{
  
 }
 
-const corsOptions = {
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:5174',
-   'https://market-server-ruby.vercel.app',
-    
-  ],
-  credentials: true,
-  optionSuccessStatus: 200,
-}
-app.use(cors(corsOptions))
-app.use(express.json())
-app.use(cookieParser())
+
 const uri = "mongodb+srv://solosphere:gZ66r3UMeEy5vQr@cluster0.v58lgaw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
 // / Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -186,7 +187,7 @@ async function run() {
         }
         const query = { 'buyer.email': email }
         const result = await jobCollection.find(query).toArray()
-        console.log(result)
+        // console.log(result)
         
         res.send(result)
       })
@@ -236,6 +237,7 @@ async function run() {
           .send('already placed')
         }
         const result = await bidsCollection.insertOne(bidData)
+        console.log(result)
         res.send(result)
     })
     // save job data
@@ -285,8 +287,8 @@ async function run() {
     
   
     // Send a ping to confirm a successful connection
-    // await client.db("admin").command({ ping: 1 });
-    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
    
