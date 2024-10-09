@@ -90,7 +90,82 @@ async function run() {
         const result = await jobCollection.find().toArray()
        
         res.send(result)
-    })
+    });
+
+
+      // Get all jobs data from db for pagination
+      app.get('/all-jobs', async (req, res) => {
+        // Convert size and page to numbers and provide defaults
+        const size = parseInt(req.query.size) || 10; // Default size is 10
+        const page = (parseInt(req.query.page) || 1) - 1; // Default page is 1 (zero-based index)
+      
+        // Filter, sort, and search values
+        const filter = req.query.filter || ''; // Default to empty if not provided
+        const sort = req.query.sort || ''; // Default sort to empty if not provided
+        const search = req.query.search || ''; // Default search to empty if not provided
+      
+        console.log("Size:", size, "Page:", page); // For debugging
+      
+        // Construct query for search and filter
+        let query = {};
+        if (search) {
+          query.job_title = { $regex: search, $options: 'i' }; // Case-insensitive search on job title
+        }
+        if (filter) {
+          query.category = filter; // Apply category filter if provided
+        }
+      
+        // Construct sorting options
+        let options = {};
+        if (sort) {
+          options.sort = { deadline: sort === 'asc' ? 1 : -1 }; // Ascending or descending sort by deadline
+        }
+      
+        try {
+          // Query the jobs collection with pagination, search, and filter
+          const result = await jobCollection
+            .find(query, options)
+            .skip(page * size) // Pagination
+            .limit(size) // Limit the number of results
+            .toArray(); // Convert result to array
+      
+          res.send(result);
+        } catch (error) {
+          console.error("Error fetching jobs:", error);
+          res.status(500).send({ error: "An error occurred while fetching jobs" });
+        }
+      });
+      
+  
+      // Get all jobs data count from db
+      app.get('/jobs-count', async (req, res) => {
+        // Get search and filter parameters from the request, with defaults if missing
+        const search = req.query.search || ''; // Default to an empty string
+        const filter = req.query.filter || ''; // Default to an empty string
+        
+        // Initialize query object
+        let query = {};
+      
+        // If search is not empty, add the job_title regex condition
+        if (search) {
+          query.job_title = { $regex: search, $options: 'i' }; // Case-insensitive search
+        }
+      
+        // If filter is provided, add the category filter
+        if (filter) {
+          query.category = filter;
+        }
+      
+        try {
+          // Get the document count matching the query
+          const count = await jobCollection.countDocuments(query);
+          res.send({ count });
+        } catch (error) {
+          console.error("Error fetching job count:", error);
+          res.status(500).send({ error: "An error occurred while fetching job count" });
+        }
+      });
+      
 
     // get all myjob posted
     app.get('/jobs/:email',verifyToken, async (req, res) => {
