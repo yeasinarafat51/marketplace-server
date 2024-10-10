@@ -10,20 +10,31 @@ const app = express()
 
 
 
-const corsOptions = {
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'https://marketplace-f655e.web.app',
-    'https://marketplacebd.netlify.app',
-    'https://imaginative-queijadas-00686a.netlify.app'
-  ],
-  credentials: true,
-  optionSuccessStatus: 200,
-  methods: ['GET', 'POST','PUT','PATCH'],
-  allowedHeaders:['Content-Type']
-}
-app.use(cors(corsOptions))
+// const corsOptions = {
+//   origin: [
+//     'http://localhost:5173',
+//     'http://localhost:5174',
+//     'https://marketplace-f655e.web.app',
+//     'https://marketplacebd.netlify.app',
+//     'https://imaginative-queijadas-00686a.netlify.app'
+//   ],
+//   credentials: true,
+//   optionSuccessStatus: 200,
+//   methods: ['GET', 'POST','PUT','PATCH'],
+//   allowedHeaders:['Content-Type']
+// }
+// app.use(cors(corsOptions))
+const allowedOrigins = ['https://marketplace-f655e.web.app', 'https://marketplacebd.netlify.app'];
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
 
 
