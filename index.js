@@ -15,7 +15,8 @@ const corsOptions = {
     'http://localhost:5173',
     'http://localhost:5174',
     'https://marketplace-f655e.web.app',
-    'https://marketplacebd.netlify.app'
+    'https://marketplacebd.netlify.app',
+    'https://imaginative-queijadas-00686a.netlify.app'
   ],
   credentials: true,
   optionSuccessStatus: 200,
