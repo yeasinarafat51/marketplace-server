@@ -96,7 +96,7 @@ async function run() {
     // clear token on logout
     app.get('/logout', (req, res) =>{
       res.clearCookie('token', {
-        httpOnly:true,
+        httpOnly:false,
         secure: process.env.NODE_ENV === 'production',
 
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
